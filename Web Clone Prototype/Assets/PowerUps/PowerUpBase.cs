@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface PowerUpBase
 {
-    public string GetType() { }
-    
-    public void Use() { }
+    string GetType();
+
+    void Use();
 }
