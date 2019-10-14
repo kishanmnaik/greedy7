@@ -88,7 +88,8 @@ public class gridMain : MonoBehaviour
                 return;
             }
             inHand.GetComponentInChildren<Text>().text = "InHand: " + acHand;
-            gridArray[i] = 0;
+            // gridArray[i] = 0;
+            tileArray[i].setVal(0);
             inTurn = true;
         } else {
             inHand.GetComponentInChildren<Text>().text = "InHand: " + (--acHand);
