@@ -14,7 +14,8 @@ public class BlockPowerUp : PowerUpBase
         return "block";
     }
 
-    public void Use() {
+    public PowerUpTilesDto Use(PowerUpTilesDto powerUpTilesDto)
+    {
         for (int i = 0; i < tileStateArray.Length; i++)
         {
             if (i == index)
@@ -25,5 +26,7 @@ public class BlockPowerUp : PowerUpBase
                 tileStateArray[i] = true;
             }
         }
+
+        return powerUpTilesDto;
     }
 }

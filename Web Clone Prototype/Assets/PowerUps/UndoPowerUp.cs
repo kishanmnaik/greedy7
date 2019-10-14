@@ -9,5 +9,8 @@ public class UndoPowerUp : PowerUpBase
         return "undo";
     }
 
-    public void Use() { }
+    public PowerUpTilesDto Use(PowerUpTilesDto powerUpTilesDto)
+    {
+        return powerUpTilesDto;
+    }
 }

@@ -15,7 +15,8 @@ public class ExplodePowerUp : PowerUpBase
         return "explode";
     }
 
-    public void Use() {
+    public PowerUpTilesDto Use(PowerUpTilesDto powerUpTilesDto)
+    {
         inTile = gridArray[index];
         gridArray[index] = 0;
         if (!reverse)
@@ -43,5 +44,7 @@ public class ExplodePowerUp : PowerUpBase
                 inTile--;
             }
         }
+
+        return powerUpTilesDto;
     }
 }

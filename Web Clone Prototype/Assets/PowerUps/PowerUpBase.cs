@@ -6,5 +6,5 @@ public interface PowerUpBase
 {
     string GetType();
 
-    void Use();
+    PowerUpTilesDto Use(PowerUpTilesDto powerUpTilesDto);
 }

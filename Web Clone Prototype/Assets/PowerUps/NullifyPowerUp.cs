@@ -9,5 +9,8 @@ public class NullifyPowerUp : PowerUpBase
         return "nullify";
     }
 
-    public void Use() { }
+    public PowerUpTilesDto Use(PowerUpTilesDto powerUpTilesDto)
+    {
+        return powerUpTilesDto;
+    }
 }

@@ -12,7 +12,9 @@ public class ReversePowerUp : PowerUpBase
         return "reverse";
     }
 
-    public void Use() {
-        reverse = !reverse;
+    public PowerUpTilesDto Use(PowerUpTilesDto powerUpTilesDto)
+    {
+        powerUpTilesDto.Reverse = !reverse;
+        return powerUpTilesDto;
     }
 }
