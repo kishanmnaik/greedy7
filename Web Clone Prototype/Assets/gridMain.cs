@@ -11,10 +11,13 @@ public class gridMain : MonoBehaviour
     public int totalCoins = gridSize * initialNumOfBeads;
 
     public Button[] btnList;
+
     int[] gridArray = new int[gridSize];
     public Text winText, inHand;
     public Text scoreA, scoreB;
     public int scoreValA = 0, scoreValB = 0, acHand = 0;
+
+    private Tile[] tileArray = new Tile[gridSize];
 
     public GameObject inhand1 ;
     public GameObject inhand2 ;
@@ -43,8 +46,9 @@ public class gridMain : MonoBehaviour
     {
         for (int i = 0; i < gridSize; i++)
         {
-            gridArray[i] = initialNumOfBeads;
-            btnList[i].GetComponentInChildren<Text>().text = initialNumOfBeads.ToString();
+            // gridArray[i] = initialNumOfBeads;
+            // btnList[i].GetComponentInChildren<Text>().text = initialNumOfBeads.ToString();
+            tileArray[i] = new Tile(initialNumOfBeads, i, btnList[i]);
         }
     }
 
@@ -52,10 +56,10 @@ public class gridMain : MonoBehaviour
     {
         //Debug.Log("clicked");
         string buttonName = EventSystem.current.currentSelectedGameObject.name;
-        Debug.Log(buttonName);
+        //Debug.Log(buttonName);
 
         string buttonText = EventSystem.current.currentSelectedGameObject.GetComponentInChildren<Text>().text;
-        Debug.Log(buttonText);
+        //Debug.Log(buttonText);
 
         int index = System.Int32.Parse(buttonName);
         updateScore(index);
@@ -74,7 +78,8 @@ public class gridMain : MonoBehaviour
         int i = ind;
         if (!inTurn)
         {
-            acHand = gridArray[i];
+            // acHand = gridArray[i];
+            acHand = tileArray[i].getVal();
             if (acHand == 0)
             {
                 turn *= -1;
@@ -87,26 +92,32 @@ public class gridMain : MonoBehaviour
             inTurn = true;
         } else {
             inHand.GetComponentInChildren<Text>().text = "InHand: " + (--acHand);
-            gridArray[i]++;
+            // gridArray[i]++;
+            tileArray[i].setVal(tileArray[i].getVal() + 1);
             if (acHand == 0)
                 inTurn = false;
         }
         enableTiles();
         disableTiles(i);
-        if (gridArray[(i + 1) % gridSize] == 0 && acHand == 0)
+        // if (gridArray[(i + 1) % gridSize] == 0 && acHand == 0)
+        if (tileArray[(i + 1) % gridSize].getVal() == 0 && acHand == 0)
         {
             if (turn == 1)
             {
-                scoreValA += gridArray[(i + 2) % gridSize];
+                // scoreValA += gridArray[(i + 2) % gridSize];
+                scoreValA += tileArray[(i + 2) % gridSize].getVal();
                 scoreA.GetComponentInChildren<Text>().text = "ScoreA: " + scoreValA;
             }
             else
             {
-                scoreValB += gridArray[(i + 2) % gridSize];
+                // scoreValB += gridArray[(i + 2) % gridSize];
+                scoreValB += tileArray[(i + 2) % gridSize].getVal();
                 scoreB.GetComponentInChildren<Text>().text = "ScoreB: " + scoreValB;
             }
-            totalCoins -= gridArray[(i + 2) % gridSize];
-            gridArray[(i + 2) % gridSize] = 0;
+            // totalCoins -= gridArray[(i + 2) % gridSize];
+            totalCoins -= tileArray[(i + 2) % gridSize].getVal();
+            // gridArray[(i + 2) % gridSize] = 0;
+            tileArray[(i + 2) % gridSize].setVal(0);
             turn *= -1;
             turnDisable();
             checkWinCon();
@@ -116,7 +127,10 @@ public class gridMain : MonoBehaviour
     public void enableTiles()
     {
         for (int j = 0; j < gridSize; j++)
-            btnList[j].interactable = true;
+        {
+            // btnList[j].interactable = true;
+            tileArray[j].setEnable();
+        }
     }
 
     public void disableTiles(int id)
@@ -126,11 +140,13 @@ public class gridMain : MonoBehaviour
             int j = (id + k) % gridSize;
             if (k != 1)
             {
-                btnList[j].interactable = false;
+                // btnList[j].interactable = false;
+                tileArray[j].setDisable();
             }
             else
             {
-                btnList[j].interactable = true;
+                // btnList[j].interactable = true;
+                tileArray[j].setEnable();
             }
         }
     }
@@ -141,20 +157,33 @@ public class gridMain : MonoBehaviour
         if (turn == 1)
         {
             // Disables Player B buttons
-            for (int i = (gridSize / 2); i < btnList.Length; i++)
-                btnList[i].interactable = false;
+            for (int i = (gridSize / 2); i < gridSize; i++)
+            {
+                // btnList[i].interactable = false;
+                tileArray[i].setDisable();
+            }
             // Enables Player A buttons
             for (int i = 0; i < gridSize / 2; i++)
-                btnList[i].interactable = true;
+            {
+                // btnList[i].interactable = true;
+                tileArray[i].setEnable();
+            }
+
         }
         else if (turn == -1)
         {
+            // Enables Player B buttons
+            for (int i = (gridSize / 2); i < gridSize; i++)
+            {
+                // btnList[i].interactable = false;
+                tileArray[i].setEnable();
+            }
             // Disables Player A buttons
             for (int i = 0; i < gridSize / 2; i++)
-                btnList[i].interactable = false;
-            // Enables Player B buttons
-            for (int i = (gridSize / 2); i < btnList.Length; i++)
-                btnList[i].interactable = true;
+            {
+                // btnList[i].interactable = true;
+                tileArray[i].setDisable();
+            }
         }
     }
 
@@ -212,7 +241,11 @@ public class gridMain : MonoBehaviour
             Debug.Log("WIN SITUATION!");
             // Disables all the tiles
             for (int z = 0; z < gridSize; z++)
-                btnList[z].interactable = false;
+            {
+                // btnList[z].interactable = false;
+                tileArray[z].setDisable();
+            }
+
             // Unhides the win text object
             winText.gameObject.SetActive(true);
             if (scoreValA > scoreValB)
@@ -228,12 +261,13 @@ public class gridMain : MonoBehaviour
     void updateBoard()
     {
         // Checks if the number of buttons in the list is the same as the number of tiles
-        if (btnList.Length == gridSize)
+        if (gridSize == gridSize)
         {
             // Rewrites all the values of the changed array to the button's text
-            for (int i = 0; i < btnList.Length; i++)
+            for (int i = 0; i < gridSize; i++)
             {
-                btnList[i].GetComponentInChildren<Text>().text = "" + gridArray[i];
+                // btnList[i].GetComponentInChildren<Text>().text = "" + gridArray[i];
+                tileArray[i].setText((tileArray[i].getVal()).ToString());
             }
         }
         // No. of buttons in the list != Number of Tiles (Check Initialization)
