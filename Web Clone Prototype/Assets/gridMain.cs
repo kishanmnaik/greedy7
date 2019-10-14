@@ -19,15 +19,24 @@ public class gridMain : MonoBehaviour
     public GameObject inhand1 ;
     public GameObject inhand2 ;
 
-    public int turn = 1;
+    public int turn = 0;
     public bool inTurn = false;
 
     // Start is called before the first frame update
     void Start()
     {
+        var coinToss = new coinToss();
+        turn = coinToss.getTurn();
+        Debug.Log("Turn: " + turn);
         winText.gameObject.SetActive(false);
         initializeGrid();
         turnDisable();
+        var powerUpsA = new PowerUps();
+        var powerUpsB = new PowerUps();
+        powerUpsA.Init();
+        powerUpsB.Init();
+        Debug.Log("A PU: " + powerUpsA.GetPowerUpCount());
+        Debug.Log(powerUpsB.GetPowerUpCount());
     }
 
     public void initializeGrid()
