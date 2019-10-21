@@ -1530,7 +1530,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1876826844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb7ba4d6b63bbbf43ba8b1366573bec2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7cbedefda33b959499adfb635935124d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   totalCoins: 18
@@ -1548,7 +1548,7 @@ MonoBehaviour:
   scoreValA: 0
   scoreValB: 0
   acHand: 0
-  turn: 0
+  turn: 1
   inTurn: 0
   win: 0
 --- !u!114 &1876826846
