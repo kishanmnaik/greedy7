@@ -38,10 +38,10 @@ public class gridSS : MonoBehaviour
         turnDisable();
         var powerUpsA = new PowerUps();
         var powerUpsB = new PowerUps();
-        powerUpsA.Init();
+        /* powerUpsA.Init();
         powerUpsB.Init();
         Debug.Log("A PU: " + powerUpsA.GetPowerUpCount());
-        Debug.Log(powerUpsB.GetPowerUpCount());
+        Debug.Log(powerUpsB.GetPowerUpCount()); */
 
     }
 

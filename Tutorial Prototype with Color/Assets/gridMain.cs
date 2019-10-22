@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+using UnityEngine.SceneManagement;
+
 public class gridMain : MonoBehaviour
 {
     public static int gridSize = 10;
@@ -19,11 +21,13 @@ public class gridMain : MonoBehaviour
 
     private Tile[] tileArray = new Tile[gridSize];
 
-    public GameObject inhand1 ;
-    public GameObject inhand2 ;
-
     public int turn = 0;
     public bool inTurn = false;
+
+    private PowerUps listPowerUp1 = new PowerUps();
+    private PowerUps listPowerUp2 = new PowerUps();
+
+    // public Button pup1;
 
     // Start is called before the first frame update
     void Start()
@@ -34,12 +38,23 @@ public class gridMain : MonoBehaviour
         winText.gameObject.SetActive(false);
         initializeGrid();
         turnDisable();
-        var powerUpsA = new PowerUps();
+        /* var powerUpsA = new PowerUps();
         var powerUpsB = new PowerUps();
         powerUpsA.Init();
         powerUpsB.Init();
         Debug.Log("A PU: " + powerUpsA.GetPowerUpCount());
-        Debug.Log(powerUpsB.GetPowerUpCount());
+        Debug.Log(powerUpsB.GetPowerUpCount()); */
+        listPowerUp1 = Loading.allP1;
+        listPowerUp2 = Loading.allP2;
+        foreach (var px in listPowerUp1.GetActivePowerUps())
+        {
+            Debug.Log("A: " + px.GetType());
+        }
+        foreach (var px in listPowerUp2.GetActivePowerUps())
+        {
+            Debug.Log("B: " + px.GetType());
+        }
+
     }
 
     public void initializeGrid()

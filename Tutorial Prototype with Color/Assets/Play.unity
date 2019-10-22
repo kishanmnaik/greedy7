@@ -1695,8 +1695,6 @@ MonoBehaviour:
   scoreValA: 0
   scoreValB: 0
   acHand: 0
-  inhand1: {fileID: 1206135616}
-  inhand2: {fileID: 921123330}
   turn: 1
   inTurn: 0
 --- !u!1 &921123330

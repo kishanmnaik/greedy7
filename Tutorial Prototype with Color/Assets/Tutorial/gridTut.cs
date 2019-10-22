@@ -33,12 +33,12 @@ public class gridTut : MonoBehaviour
         winText.gameObject.SetActive(false);
         initializeGrid();
         turnDisable();
-        var powerUpsA = new PowerUps();
+        /* var powerUpsA = new PowerUps();
         var powerUpsB = new PowerUps();
         powerUpsA.Init();
         powerUpsB.Init();
         Debug.Log("A PU: " + powerUpsA.GetPowerUpCount());
-        Debug.Log(powerUpsB.GetPowerUpCount());
+        Debug.Log(powerUpsB.GetPowerUpCount()); */
     }
 
     public void initializeGrid()
