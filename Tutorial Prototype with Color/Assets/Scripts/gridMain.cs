@@ -18,7 +18,7 @@ public class gridMain : MonoBehaviour
     public Button[] apList, bpList;
 
     int[] gridArray = new int[gridSize];
-    public Text winText, inHand;
+    public Text winText, inHand, explodeSelect;
     public Text scoreA, scoreB;
     public int scoreValA = 0, scoreValB = 0, acHand = 0;
 
@@ -32,6 +32,8 @@ public class gridMain : MonoBehaviour
     private PowerUps listPowerUp1 = new PowerUps();
     private PowerUps listPowerUp2 = new PowerUps();
 
+    private bool explodePowerUpInUse = false;
+
     // public Button pup1;
 
     // Start is called before the first frame update
@@ -41,6 +43,8 @@ public class gridMain : MonoBehaviour
         turn = coinToss.getTurn();
         Debug.Log("Turn: " + turn);
         winText.gameObject.SetActive(false);
+        explodeSelect = GameObject.Find("explodeSelect").GetComponent<Text>();
+        explodeSelect.gameObject.SetActive(false);
         initializeGrid();
         turnDisable();
         /* var powerUpsA = new PowerUps();
@@ -158,16 +162,48 @@ public class gridMain : MonoBehaviour
         //util.someFunction("some thing in static");
     }
 
-    public void playerASelectedExplode()
+    public void ExplodedPowerUpInitiated()
     {
-        string buttonName = EventSystem.current.currentSelectedGameObject.name;
-        Debug.Log(buttonName);
-        var powerupsPlayerA = listPowerUp1.GetActivePowerUps();
-        var explodePowerUpA = powerupsPlayerA.Where(x => x.GetType().Equals("explode")).FirstOrDefault();
+        explodePowerUpInUse = true;
+        explodeSelect.gameObject.SetActive(true);
+        explodeSelect.text = "Select the tile to explode! BOOM!";
+        turn *= -1; //to explode opponent's tile
+        turnDisable();
+    }
 
-        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(-1, 6); //explode tile with index 6
-        powerUpTilesDto = explodePowerUpA.Use(powerUpTilesDto);
+    public void UseExplodePowerUp(int indexToBeBlocked)
+    {
+        turn *= -1;
+        explodeSelect.gameObject.SetActive(false);
+        List<PowerUpBase> playerPowerUps;
+        if(turn == 1)
+        {
+            playerPowerUps = listPowerUp1.GetActivePowerUps();
+        }
+        else
+        {
+            playerPowerUps = listPowerUp2.GetActivePowerUps();
+        }
+
+        var explodePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("explode"));
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(-1, indexToBeBlocked);
+        powerUpTilesDto = explodePowerUp.Use(powerUpTilesDto);
         powerUpTilesDto.TileArray.CopyTo(tileArray, 0);
+        
+        if (turn == 1)
+        {
+            listPowerUp1.DisablePowerUp(explodePowerUp);
+        }
+        else
+        {
+            listPowerUp2.DisablePowerUp(explodePowerUp);
+        }
+        initializePowerUp(); //to disable used powerup
+        enableTiles();
+        turn *= -1;
+        turnDisable();
+        explodePowerUpInUse = false;
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
     private PowerUpTilesDto getPowerUpDto(int tileIdToBeBlocked = -1, int tileIdToBeExploded = -1)
@@ -185,6 +221,11 @@ public class gridMain : MonoBehaviour
 
     public void updateScore(int ind)
     {
+        if(explodePowerUpInUse)
+        {
+            UseExplodePowerUp(ind);
+            return;
+        }
         int i = ind;
         if (!inTurn)
         {
