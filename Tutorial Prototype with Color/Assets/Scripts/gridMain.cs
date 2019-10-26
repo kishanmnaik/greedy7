@@ -206,6 +206,34 @@ public class gridMain : MonoBehaviour
         EventSystem.current.SetSelectedGameObject(null);
     }
 
+    public void UseReversePowerUp()
+    {
+        Debug.Log("reverse called :" + reverse);
+        List<PowerUpBase> playerPowerUps;
+        if (turn == 1)
+        {
+            playerPowerUps = listPowerUp1.GetActivePowerUps();
+        }
+        else
+        {
+            playerPowerUps = listPowerUp2.GetActivePowerUps();
+        }
+
+        var reversePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("reverse"));        
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto();
+        powerUpTilesDto = reversePowerUp.Use(powerUpTilesDto);
+        reverse = powerUpTilesDto.Reverse;
+        if (turn == 1)
+        {
+            listPowerUp1.DisablePowerUp(reversePowerUp);
+        }
+        else
+        {
+            listPowerUp2.DisablePowerUp(reversePowerUp);
+        }
+        initializePowerUp(); //to disable used powerup
+    }
+
     private PowerUpTilesDto getPowerUpDto(int tileIdToBeBlocked = -1, int tileIdToBeExploded = -1)
     {
         PowerUpTilesDto powerUpTilesDto = new PowerUpTilesDto();
@@ -252,7 +280,37 @@ public class gridMain : MonoBehaviour
         enableTiles();
         disableTiles(i);
         // if (gridArray[(i + 1) % gridSize] == 0 && acHand == 0)
-        if (tileArray[(i + 1) % gridSize].getVal() == 0 && acHand == 0)
+
+        if (reverse)
+        {
+            if (i == 0)
+            {
+                i = gridSize;
+            }
+            if (tileArray[(i - 1) % gridSize].getVal() == 0 && acHand == 0)
+            {
+                if (i - 1 == 0)
+                {
+                    i = gridSize + 1;
+                }
+                if (turn == 1)
+                {
+                    scoreValA += tileArray[(i - 2) % gridSize].getVal();
+                    scoreA.GetComponentInChildren<Text>().text = "ScoreA: " + scoreValA;
+                }
+                else
+                {                    
+                    scoreValB += tileArray[(i - 2) % gridSize].getVal();
+                    scoreB.GetComponentInChildren<Text>().text = "ScoreB: " + scoreValB;
+                }
+                totalCoins -= tileArray[(i - 2) % gridSize].getVal();
+                tileArray[(i - 2) % gridSize].setVal(0);
+                turn *= -1;
+                turnDisable();
+                checkWinCon();
+            }
+        }
+        else if (tileArray[(i + 1) % gridSize].getVal() == 0 && acHand == 0)
         {
             if (turn == 1)
             {
@@ -290,7 +348,7 @@ public class gridMain : MonoBehaviour
         for (int k = 1; k <= gridSize; k++)
         {
             int j = (id + k) % gridSize;
-            if (k != 1)
+            if ((!reverse && k != 1) || (reverse && k != gridSize-1))
             {
                 // btnList[j].interactable = false;
                 tileArray[j].setDisable();
@@ -302,7 +360,7 @@ public class gridMain : MonoBehaviour
             }
         }
     }
-    
+
     public void turnDisable()
     {
         // Checks turn (1 => A, -1 => B)
