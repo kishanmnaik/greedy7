@@ -5,6 +5,7 @@ using UnityEngine;
 public class PowerUpTilesDto
 {
     private Tile[] tileArray;
+    private Tile[] previousTileArray;
     private int tileIdToBeBlocked = -1;
     private bool reverse = false;
 
@@ -16,6 +17,8 @@ public class PowerUpTilesDto
     }
 
     public Tile[] TileArray { get; set; }
+
+    public Tile[] PreviousTileArray { get; set; }
 
     public int TileIdToBeBlocked { get; set; }
 
