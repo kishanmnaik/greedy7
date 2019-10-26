@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Linq;
 
 using UnityEngine.SceneManagement;
 
@@ -22,6 +23,8 @@ public class gridMain : MonoBehaviour
     public int scoreValA = 0, scoreValB = 0, acHand = 0;
 
     private Tile[] tileArray = new Tile[gridSize];
+    private Tile[] previousTileArray = new Tile[gridSize];
+    private bool reverse;
 
     public int turn = 0;
     public bool inTurn = false;
@@ -153,6 +156,31 @@ public class gridMain : MonoBehaviour
         //ut.someFunction2("something non static");
         //EventSystem.current.SetSelectedGameObject(null);
         //util.someFunction("some thing in static");
+    }
+
+    public void playerASelectedExplode()
+    {
+        string buttonName = EventSystem.current.currentSelectedGameObject.name;
+        Debug.Log(buttonName);
+        var powerupsPlayerA = listPowerUp1.GetActivePowerUps();
+        var explodePowerUpA = powerupsPlayerA.Where(x => x.GetType().Equals("explode")).FirstOrDefault();
+
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(-1, 6); //explode tile with index 6
+        powerUpTilesDto = explodePowerUpA.Use(powerUpTilesDto);
+        powerUpTilesDto.TileArray.CopyTo(tileArray, 0);
+    }
+
+    private PowerUpTilesDto getPowerUpDto(int tileIdToBeBlocked = -1, int tileIdToBeExploded = -1)
+    {
+        PowerUpTilesDto powerUpTilesDto = new PowerUpTilesDto();
+        powerUpTilesDto.TileArray = new Tile[tileArray.Length];
+        tileArray.CopyTo(powerUpTilesDto.TileArray, 0);
+        powerUpTilesDto.PreviousTileArray = new Tile[tileArray.Length];
+        tileArray.CopyTo(powerUpTilesDto.PreviousTileArray, 0);
+        powerUpTilesDto.TileIdToBeBlocked = tileIdToBeBlocked;
+        powerUpTilesDto.TileIdToBeExploded = tileIdToBeExploded;
+        powerUpTilesDto.Reverse = reverse;
+        return powerUpTilesDto;
     }
 
     public void updateScore(int ind)
