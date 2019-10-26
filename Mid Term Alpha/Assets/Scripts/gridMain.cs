@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Linq;
 
 using UnityEngine.SceneManagement;
 
@@ -17,17 +18,21 @@ public class gridMain : MonoBehaviour
     public Button[] apList, bpList;
 
     int[] gridArray = new int[gridSize];
-    public Text winText, inHand;
+    public Text winText, inHand, explodeSelect;
     public Text scoreA, scoreB;
     public int scoreValA = 0, scoreValB = 0, acHand = 0;
 
     private Tile[] tileArray = new Tile[gridSize];
+    private Tile[] previousTileArray = new Tile[gridSize];
+    private bool reverse;
 
     public int turn = 0;
     public bool inTurn = false;
 
     private PowerUps listPowerUp1 = new PowerUps();
     private PowerUps listPowerUp2 = new PowerUps();
+
+    private bool explodePowerUpInUse = false;
 
     // public Button pup1;
 
@@ -38,6 +43,8 @@ public class gridMain : MonoBehaviour
         turn = coinToss.getTurn();
         Debug.Log("Turn: " + turn);
         winText.gameObject.SetActive(false);
+        explodeSelect = GameObject.Find("explodeSelect").GetComponent<Text>();
+        explodeSelect.gameObject.SetActive(false);
         initializeGrid();
         turnDisable();
         /* var powerUpsA = new PowerUps();
@@ -155,8 +162,98 @@ public class gridMain : MonoBehaviour
         //util.someFunction("some thing in static");
     }
 
+    public void ExplodedPowerUpInitiated()
+    {
+        explodePowerUpInUse = true;
+        explodeSelect.gameObject.SetActive(true);
+        explodeSelect.text = "Select the tile to explode! BOOM!";
+        turn *= -1; //to explode opponent's tile
+        turnDisable();
+    }
+
+    public void UseExplodePowerUp(int indexToBeBlocked)
+    {
+        turn *= -1;
+        explodeSelect.gameObject.SetActive(false);
+        List<PowerUpBase> playerPowerUps;
+        if(turn == 1)
+        {
+            playerPowerUps = listPowerUp1.GetActivePowerUps();
+        }
+        else
+        {
+            playerPowerUps = listPowerUp2.GetActivePowerUps();
+        }
+
+        var explodePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("explode"));
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(-1, indexToBeBlocked);
+        powerUpTilesDto = explodePowerUp.Use(powerUpTilesDto);
+        powerUpTilesDto.TileArray.CopyTo(tileArray, 0);
+        
+        if (turn == 1)
+        {
+            listPowerUp1.DisablePowerUp(explodePowerUp);
+        }
+        else
+        {
+            listPowerUp2.DisablePowerUp(explodePowerUp);
+        }
+        initializePowerUp(); //to disable used powerup
+        enableTiles();
+        turn *= -1;
+        turnDisable();
+        explodePowerUpInUse = false;
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+
+    public void UseReversePowerUp()
+    {
+        Debug.Log("reverse called :" + reverse);
+        List<PowerUpBase> playerPowerUps;
+        if (turn == 1)
+        {
+            playerPowerUps = listPowerUp1.GetActivePowerUps();
+        }
+        else
+        {
+            playerPowerUps = listPowerUp2.GetActivePowerUps();
+        }
+
+        var reversePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("reverse"));        
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto();
+        powerUpTilesDto = reversePowerUp.Use(powerUpTilesDto);
+        reverse = powerUpTilesDto.Reverse;
+        if (turn == 1)
+        {
+            listPowerUp1.DisablePowerUp(reversePowerUp);
+        }
+        else
+        {
+            listPowerUp2.DisablePowerUp(reversePowerUp);
+        }
+        initializePowerUp(); //to disable used powerup
+    }
+
+    private PowerUpTilesDto getPowerUpDto(int tileIdToBeBlocked = -1, int tileIdToBeExploded = -1)
+    {
+        PowerUpTilesDto powerUpTilesDto = new PowerUpTilesDto();
+        powerUpTilesDto.TileArray = new Tile[tileArray.Length];
+        tileArray.CopyTo(powerUpTilesDto.TileArray, 0);
+        powerUpTilesDto.PreviousTileArray = new Tile[tileArray.Length];
+        tileArray.CopyTo(powerUpTilesDto.PreviousTileArray, 0);
+        powerUpTilesDto.TileIdToBeBlocked = tileIdToBeBlocked;
+        powerUpTilesDto.TileIdToBeExploded = tileIdToBeExploded;
+        powerUpTilesDto.Reverse = reverse;
+        return powerUpTilesDto;
+    }
+
     public void updateScore(int ind)
     {
+        if(explodePowerUpInUse)
+        {
+            UseExplodePowerUp(ind);
+            return;
+        }
         int i = ind;
         if (!inTurn)
         {
@@ -183,7 +280,37 @@ public class gridMain : MonoBehaviour
         enableTiles();
         disableTiles(i);
         // if (gridArray[(i + 1) % gridSize] == 0 && acHand == 0)
-        if (tileArray[(i + 1) % gridSize].getVal() == 0 && acHand == 0)
+
+        if (reverse)
+        {
+            if (i == 0)
+            {
+                i = gridSize;
+            }
+            if (tileArray[(i - 1) % gridSize].getVal() == 0 && acHand == 0)
+            {
+                if (i - 1 == 0)
+                {
+                    i = gridSize + 1;
+                }
+                if (turn == 1)
+                {
+                    scoreValA += tileArray[(i - 2) % gridSize].getVal();
+                    scoreA.GetComponentInChildren<Text>().text = "ScoreA: " + scoreValA;
+                }
+                else
+                {                    
+                    scoreValB += tileArray[(i - 2) % gridSize].getVal();
+                    scoreB.GetComponentInChildren<Text>().text = "ScoreB: " + scoreValB;
+                }
+                totalCoins -= tileArray[(i - 2) % gridSize].getVal();
+                tileArray[(i - 2) % gridSize].setVal(0);
+                turn *= -1;
+                turnDisable();
+                checkWinCon();
+            }
+        }
+        else if (tileArray[(i + 1) % gridSize].getVal() == 0 && acHand == 0)
         {
             if (turn == 1)
             {
@@ -221,7 +348,7 @@ public class gridMain : MonoBehaviour
         for (int k = 1; k <= gridSize; k++)
         {
             int j = (id + k) % gridSize;
-            if (k != 1)
+            if ((!reverse && k != 1) || (reverse && k != gridSize-1))
             {
                 // btnList[j].interactable = false;
                 tileArray[j].setDisable();
@@ -233,7 +360,7 @@ public class gridMain : MonoBehaviour
             }
         }
     }
-    
+
     public void turnDisable()
     {
         // Checks turn (1 => A, -1 => B)

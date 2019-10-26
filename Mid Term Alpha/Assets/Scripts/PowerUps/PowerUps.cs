@@ -37,4 +37,9 @@ public class PowerUps
         powerUps.TryGetValue(powerUpBase, out isActive);
         return isActive;
     }
+
+    public void DisablePowerUp(PowerUpBase powerUpBase)
+    {
+        powerUps[powerUpBase] = false;
+    }
 }

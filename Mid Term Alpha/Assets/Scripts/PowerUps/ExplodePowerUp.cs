@@ -4,12 +4,6 @@ using UnityEngine;
 
 public class ExplodePowerUp : PowerUpBase
 {
-    // TODO: GET REVERSE, INDEX AND GRIDARRAY FROM GRIDMAIN
-    bool reverse = false;
-    int inTile = 0;
-    int index = 0;
-    int[] gridArray;
-
     public string GetType()
     {
         return "explode";
@@ -17,34 +11,37 @@ public class ExplodePowerUp : PowerUpBase
 
     public PowerUpTilesDto Use(PowerUpTilesDto powerUpTilesDto)
     {
-        inTile = gridArray[index];
-        gridArray[index] = 0;
-        if (!reverse)
+        Debug.Log(powerUpTilesDto.TileIdToBeExploded);
+        int valueInTile = powerUpTilesDto.TileArray[powerUpTilesDto.TileIdToBeExploded].getVal();
+        int index = powerUpTilesDto.TileIdToBeExploded;
+        int gridSize = powerUpTilesDto.TileArray.Length;
+
+        powerUpTilesDto.TileArray[index].setVal(0);
+        if (powerUpTilesDto.Reverse == false)
         {
-            while(inTile != 0)
+            while(valueInTile != 0)
             {
-                index = (index + 1) % gridArray.Length;
-                gridArray[index]++;
-                inTile--;
+                index = (index + 1) % gridSize;
+                powerUpTilesDto.TileArray[index].setVal(powerUpTilesDto.TileArray[index].getVal() + 1);
+                valueInTile--;
             }
         }
         else
         {
-            while(inTile != 0)
+            while (valueInTile != 0)
             {
-                if (index == 0)
+                if(index == 0)
                 {
-                    index = gridArray.Length - 1;
+                    index = gridSize - 1;
                 }
                 else
                 {
-                    index -= 1;
+                    index = index - 1;
                 }
-                gridArray[index]++;
-                inTile--;
+                powerUpTilesDto.TileArray[index].setVal(powerUpTilesDto.TileArray[index].getVal() + 1);
+                valueInTile--;
             }
         }
-
         return powerUpTilesDto;
     }
 }

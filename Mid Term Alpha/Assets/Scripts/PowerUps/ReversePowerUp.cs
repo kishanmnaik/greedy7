@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ReversePowerUp : PowerUpBase
 {
-    // TODO: GET REVERSE FROM GRIDMAIN
     bool reverse = false;
 
     public string GetType()
@@ -14,7 +13,7 @@ public class ReversePowerUp : PowerUpBase
 
     public PowerUpTilesDto Use(PowerUpTilesDto powerUpTilesDto)
     {
-        powerUpTilesDto.Reverse = !reverse;
+        powerUpTilesDto.Reverse = !powerUpTilesDto.Reverse;
         return powerUpTilesDto;
     }
 }
