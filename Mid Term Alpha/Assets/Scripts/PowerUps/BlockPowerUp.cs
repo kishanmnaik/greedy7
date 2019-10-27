@@ -11,7 +11,7 @@ public class BlockPowerUp : PowerUpBase
 
     public string GetType()
     {
-        return "block";
+        return "shield";
     }
 
     public PowerUpTilesDto Use(PowerUpTilesDto powerUpTilesDto)

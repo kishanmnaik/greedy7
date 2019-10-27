@@ -171,7 +171,7 @@ public class gridMain : MonoBehaviour
         turnDisable();
     }
 
-    public void UseExplodePowerUp(int indexToBeBlocked)
+    public void UseExplodePowerUp(int indexToBeExploded)
     {
         turn *= -1;
         explodeSelect.gameObject.SetActive(false);
@@ -186,7 +186,7 @@ public class gridMain : MonoBehaviour
         }
 
         var explodePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("explode"));
-        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(-1, indexToBeBlocked);
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(-1, indexToBeExploded);
         powerUpTilesDto = explodePowerUp.Use(powerUpTilesDto);
         powerUpTilesDto.TileArray.CopyTo(tileArray, 0);
         
