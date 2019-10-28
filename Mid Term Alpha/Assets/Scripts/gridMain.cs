@@ -38,11 +38,13 @@ public class gridMain : MonoBehaviour
 
     public int turn = 0;
     public bool inTurn = false;
+    public bool win = false;
 
     private PowerUps listPowerUp1 = new PowerUps();
     private PowerUps listPowerUp2 = new PowerUps();
 
     private bool explodePowerUpInUse = false;
+
 
     // public Button pup1;
 
@@ -383,11 +385,13 @@ public class gridMain : MonoBehaviour
         int i = ind;
         if (!inTurn)
         {
+            inHand.color = new Color32(255, 241, 118, 255);
             // acHand = gridArray[i];
             acHand = tileArray[i].getVal();
             if (acHand == 0)
             {
                 turn *= -1;
+                inHand.color = Color.white;
                 turnDisable();
                 checkWinCon();
                 return;
@@ -401,7 +405,10 @@ public class gridMain : MonoBehaviour
             // gridArray[i]++;
             tileArray[i].setVal(tileArray[i].getVal() + 1);
             if (acHand == 0)
+            {
+                inHand.color = Color.white;
                 inTurn = false;
+            }
         }
         enableTiles();
         disableTiles(i);
@@ -581,7 +588,7 @@ public class gridMain : MonoBehaviour
                 // btnList[z].interactable = false;
                 tileArray[z].setDisable();
             }
-
+            win = true;
             // Unhides the win text object
             winText.gameObject.SetActive(true);
             if (scoreValA > scoreValB)
@@ -652,6 +659,24 @@ public class gridMain : MonoBehaviour
 
         updateBoard();
         // Checks if the game has a winner
+        if (!win)
+        {
+            if (turn == 1)
+            {
+                scoreA.color = new Color32(100, 221, 23, 255);
+                scoreB.color = Color.white;
+            }
+            else
+            {
+                scoreB.color = new Color32(100, 221, 23, 255);
+                scoreA.color = Color.white;
+            }
+        }
+        else
+        {
+            scoreA.color = Color.white;
+            scoreB.color = Color.white;
+        }
     }
 
     
