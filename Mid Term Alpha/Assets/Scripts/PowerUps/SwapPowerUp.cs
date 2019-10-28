@@ -16,9 +16,12 @@ public class SwapPowerUp : PowerUpBase
         int size = powerUpTilesDto.TileArray.Length;
         for (int i = 0, j = size - 1; i < size / 2; i++, j--)
         {
-            gridArray[i] += gridArray[j];
-            gridArray[j] = gridArray[i] - gridArray[j];
-            gridArray[i] = gridArray[i] - gridArray[j];
+            //gridArray[i] += gridArray[j];
+            //gridArray[j] = gridArray[i] - gridArray[j];
+            //gridArray[i] = gridArray[i] - gridArray[j];
+            var tempValue = powerUpTilesDto.TileArray[i].getVal();
+            powerUpTilesDto.TileArray[i].setVal(powerUpTilesDto.TileArray[j].getVal());
+            powerUpTilesDto.TileArray[j].setVal(tempValue);
         }
 
         return powerUpTilesDto;

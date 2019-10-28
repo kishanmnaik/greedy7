@@ -336,6 +336,34 @@ public class gridMain : MonoBehaviour
         initializePowerUp(); //to disable used powerup
     }
 
+    public void UseSwapPowerUp()
+    {
+        // Debug.Log("swap called :" + reverse);
+        List<PowerUpBase> playerPowerUps;
+        if (turn == 1)
+        {
+            playerPowerUps = listPowerUp1.GetActivePowerUps();
+        }
+        else
+        {
+            playerPowerUps = listPowerUp2.GetActivePowerUps();
+        }
+
+        var swapPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("swap"));
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto();
+        powerUpTilesDto = swapPowerUp.Use(powerUpTilesDto);
+        // reverse = powerUpTilesDto.Reverse;
+        if (turn == 1)
+        {
+            listPowerUp1.DisablePowerUp(swapPowerUp);
+        }
+        else
+        {
+            listPowerUp2.DisablePowerUp(swapPowerUp);
+        }
+        initializePowerUp(); //to disable used powerup
+    }
+
     private PowerUpTilesDto getPowerUpDto(int tileIdToBeBlocked = -1, int tileIdToBeExploded = -1)
     {
         PowerUpTilesDto powerUpTilesDto = new PowerUpTilesDto();
