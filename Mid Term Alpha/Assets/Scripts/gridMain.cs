@@ -145,8 +145,6 @@ public class gridMain : MonoBehaviour
         }
     }
 
-    
-
     public void initializeGrid()
     {
         for (int i = 0; i < gridSize; i++)
@@ -214,8 +212,6 @@ public class gridMain : MonoBehaviour
                 turn *= -1; //to explode opponent's tile
                 turnDisable();
             }
-
-
         }
         else
         {
