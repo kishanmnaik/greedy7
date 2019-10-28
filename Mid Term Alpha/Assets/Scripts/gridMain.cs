@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Linq;
+using System.Timers;
 
 using UnityEngine.SceneManagement;
 
@@ -20,6 +21,15 @@ public class gridMain : MonoBehaviour
     int[] gridArray = new int[gridSize];
     public Text winText, inHand, explodeSelect;
     public Text scoreA, scoreB;
+
+    public Text nullTextA, nullTextB;
+    public bool isCalledNullify = false;
+    public bool isNullifyButtonClicked = false;
+    public int count_null = 0;
+    public string nullify_powerup = "";
+    public static float nullify_time = 0;
+
+
     public int scoreValA = 0, scoreValB = 0, acHand = 0;
 
     private Tile[] tileArray = new Tile[gridSize];
@@ -45,6 +55,10 @@ public class gridMain : MonoBehaviour
         winText.gameObject.SetActive(false);
         explodeSelect = GameObject.Find("explodeSelect").GetComponent<Text>();
         explodeSelect.gameObject.SetActive(false);
+
+        nullTextA.gameObject.SetActive(false);
+        nullTextB.gameObject.SetActive(false);
+
         initializeGrid();
         turnDisable();
         /* var powerUpsA = new PowerUps();
@@ -95,7 +109,7 @@ public class gridMain : MonoBehaviour
             {
                 apList[4].interactable = true;
             }
-            else
+            else if (pTempText.Contains("nullify"))
             {
                 apList[5].interactable = true;
             }
@@ -124,12 +138,14 @@ public class gridMain : MonoBehaviour
             {
                 bpList[4].interactable = true;
             }
-            else
+            else if (pTempText.Contains("nullify"))
             {
                 bpList[5].interactable = true;
             }
         }
     }
+
+    
 
     public void initializeGrid()
     {
@@ -162,13 +178,99 @@ public class gridMain : MonoBehaviour
         //util.someFunction("some thing in static");
     }
 
+    public void ClikedNullify()
+    {
+        isNullifyButtonClicked = true;
+    }
+
     public void ExplodedPowerUpInitiated()
     {
-        explodePowerUpInUse = true;
-        explodeSelect.gameObject.SetActive(true);
-        explodeSelect.text = "Select the tile to explode! BOOM!";
-        turn *= -1; //to explode opponent's tile
-        turnDisable();
+        
+        if (count_null == 0)
+        {
+            if ((turn * -1 == 1 && apList[5].interactable == true) || (turn * -1 == -1 && bpList[5].interactable == true))
+            {
+                if (turn * -1 == 1)
+                {
+                    nullTextA.gameObject.SetActive(true);
+                }
+                else
+                {
+                    nullTextB.gameObject.SetActive(true);
+                }
+                isCalledNullify = true;
+                count_null += 1;
+                nullify_powerup = "explode";
+                
+            }
+            else
+            {
+                
+                
+                explodePowerUpInUse = true;
+                explodeSelect.gameObject.SetActive(true);
+
+                explodeSelect.text = "Select the tile to explode! BOOM!";
+                turn *= -1; //to explode opponent's tile
+                turnDisable();
+            }
+
+
+        }
+        else
+        {
+            count_null = 0;
+            if (isNullifyButtonClicked == true)
+            {
+                
+                isCalledNullify = false;
+                nullify_powerup = "";
+                isNullifyButtonClicked = false;
+
+                List<PowerUpBase> playerPowerUps_1;
+                List<PowerUpBase> playerPowerUps_2;
+
+                playerPowerUps_1 = listPowerUp1.GetActivePowerUps();
+
+                playerPowerUps_2 = listPowerUp2.GetActivePowerUps();
+
+
+                //var nullifyPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("nullify"));
+                //var explodePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("explode"));
+
+
+                if (turn == 1)
+                {
+                    var nullifyPowerUp = playerPowerUps_2.FirstOrDefault(x => x.GetType().Equals("nullify"));
+                    var explodePowerUp = playerPowerUps_1.FirstOrDefault(x => x.GetType().Equals("explode"));
+                    listPowerUp1.DisablePowerUp(explodePowerUp);
+                    listPowerUp2.DisablePowerUp(nullifyPowerUp);
+                    //apList[2].interactable = false;
+                    //bpList[5].interactable = false;
+
+                }
+                else
+                {
+                    var nullifyPowerUp = playerPowerUps_1.FirstOrDefault(x => x.GetType().Equals("nullify"));
+                    var explodePowerUp = playerPowerUps_2.FirstOrDefault(x => x.GetType().Equals("explode"));
+                    listPowerUp2.DisablePowerUp(explodePowerUp);
+                    listPowerUp1.DisablePowerUp(nullifyPowerUp);
+                    //apList[5].interactable = false;
+                    //bpList[2].interactable = false;
+                }
+                initializePowerUp();
+                return;
+            }
+            else
+            {
+                explodePowerUpInUse = true;
+                explodeSelect.gameObject.SetActive(true);
+
+                explodeSelect.text = "Select the tile to explode! BOOM!";
+                turn *= -1; //to explode opponent's tile
+                turnDisable();
+            }
+        }
     }
 
     public void UseExplodePowerUp(int indexToBeExploded)
@@ -491,6 +593,39 @@ public class gridMain : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if (isCalledNullify)
+        {
+            
+            Debug.Log("count_null "+ count_null);
+            Debug.Log("isCalledNullify " + isCalledNullify);
+
+            nullify_time += Time.deltaTime;
+
+
+            if (nullify_time >= 5.0f)
+            {
+                Debug.Log(nullify_time);
+                isCalledNullify = false;
+                nullify_time = 0;
+                nullTextA.gameObject.SetActive(false);
+                nullTextB.gameObject.SetActive(false);
+                Debug.Log("isNullifyButtonClicked: " + isNullifyButtonClicked);
+
+                if (nullify_powerup == "explode")
+                {
+                    ExplodedPowerUpInitiated();
+                }
+                Debug.Log("count_null " + count_null);
+
+            }
+
+        }
+
+
+
+
+
         updateBoard();
         // Checks if the game has a winner
     }
