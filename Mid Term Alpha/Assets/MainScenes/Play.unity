@@ -336,7 +336,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 896659247}
-        m_MethodName: ClikedNullify
+        m_MethodName: ClickedNullifyB
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3044,7 +3044,8 @@ MonoBehaviour:
   nullTextA: {fileID: 1497673208}
   nullTextB: {fileID: 1177639250}
   isCalledNullify: 0
-  isNullifyButtonClicked: 0
+  isNullifyButtonClickedA: 0
+  isNullifyButtonClickedB: 0
   isPowerUpButtonClicked: 0
   count_null: 0
   nullify_powerup: 
@@ -3955,7 +3956,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 896659247}
-        m_MethodName: ClikedNullify
+        m_MethodName: ClickedNullifyA
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
