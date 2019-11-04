@@ -808,7 +808,7 @@ public class gridMain : MonoBehaviour
         scoreValB = powerUpTilesDto.ScoreB;
 
         changeTurn();
-
+        changeTurn();
     }
 
     void changeTurn()
