@@ -814,6 +814,15 @@ public class gridMain : MonoBehaviour
     void changeTurn()
     {
 
+        preScoreValA = scoreValA;
+        preScoreValB = scoreValB;
+        for (int i = 0; i < tileArray.Length; i++)
+        {
+            int currentVal = tileArray[i].getVal();
+            previousTileArray[i].setVal(currentVal);
+
+        }
+
         turn *= -1;
         turnDisable();
         checkWinCon();
@@ -879,14 +888,14 @@ public class gridMain : MonoBehaviour
                 }
                 else
                 {
-                    preScoreValA = scoreValA;
-                    preScoreValB = scoreValB;
-                    for (int i = 0; i < tileArray.Length; i++)
-                    {
-                        int currentVal = tileArray[i].getVal();
-                        previousTileArray[i].setVal(currentVal);
+                    //preScoreValA = scoreValA;
+                    //preScoreValB = scoreValB;
+                    //for (int i = 0; i < tileArray.Length; i++)
+                    //{
+                    //    int currentVal = tileArray[i].getVal();
+                    //    previousTileArray[i].setVal(currentVal);
 
-                    }
+                    //}
                     changeTurn();
                 }
             }
