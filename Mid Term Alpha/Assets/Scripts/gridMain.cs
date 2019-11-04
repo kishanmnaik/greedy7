@@ -43,7 +43,7 @@ public class gridMain : MonoBehaviour
     private Tile[] tileArray = new Tile[gridSize];
     private Tile[] previousTileArray = new Tile[gridSize];
 
-
+    public Image dirCW, dirCCW;
 
     private bool reverse;
 
@@ -88,6 +88,20 @@ public class gridMain : MonoBehaviour
         listPowerUp2 = Loading.allP2;
 
         initializePowerUp();
+    }
+
+    void handleReverseDirection()
+    {
+        if (reverse)
+        {
+            dirCCW.gameObject.SetActive(false);
+            dirCW.gameObject.SetActive(true);
+        }
+        else
+        {
+            dirCW.gameObject.SetActive(false);
+            dirCCW.gameObject.SetActive(true);
+        }
     }
 
     void initializePowerUp()
@@ -793,6 +807,8 @@ public class gridMain : MonoBehaviour
         }
 
         updateBoard();
+        handleReverseDirection();
+
         // Checks if the game has a winner
         if (!win)
         {
