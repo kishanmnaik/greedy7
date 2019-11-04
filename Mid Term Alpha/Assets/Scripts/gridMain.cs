@@ -288,6 +288,17 @@ public class gridMain : MonoBehaviour
             isCalledNullify = true;
 
         }
+        else
+        {
+            nullify_powerup = "";
+            explodePowerUpInUse = true;
+            explodeSelect.gameObject.SetActive(true);
+
+            explodeSelect.text = "Select the tile to explode! BOOM!";
+            turn *= -1; //to explode opponent's tile
+            turnDisable();
+            isPowerUpButtonClicked = false;
+        }
         //isPowerUpButtonClicked = true;
 
 
@@ -392,6 +403,7 @@ public class gridMain : MonoBehaviour
         {
             listPowerUp2.DisablePowerUp(explodePowerUp);
         }
+        takeSnapshot(powerUpTilesDto);
         initializePowerUp(); //to disable used powerup
         enableTiles();
         turn *= -1;
@@ -453,9 +465,22 @@ public class gridMain : MonoBehaviour
         {
             listPowerUp2.DisablePowerUp(swapPowerUp);
         }
+
+        takeSnapshot(powerUpTilesDto);
         initializePowerUp(); //to disable used powerup
     }
 
+    public void takeSnapshot(PowerUpTilesDto powerUpTilesDto)
+    {
+        preScoreValA = scoreValA;
+        preScoreValB = scoreValB;
+        for (int i = 0; i < tileArray.Length; i++)
+        {
+            int currentVal = powerUpTilesDto.TileArray[i].getVal();
+            previousTileArray[i].setVal(currentVal);
+
+        }
+    }
     private PowerUpTilesDto getPowerUpDto(int tileIdToBeBlocked = -1, int tileIdToBeExploded = -1, int ScoreA = 0, int ScoreB = 0, int PreviousScoreA = 0, int PreviousScoreB = 0)
     {
         PowerUpTilesDto powerUpTilesDto = new PowerUpTilesDto();
