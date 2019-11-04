@@ -23,17 +23,28 @@ public class gridMain : MonoBehaviour
     public Text scoreA, scoreB;
 
     public Text nullTextA, nullTextB;
+
     public bool isCalledNullify = false;
     public bool isNullifyButtonClicked = false;
+    public bool isPowerUpButtonClicked = false;
     public int count_null = 0;
     public string nullify_powerup = "";
-    public static float nullify_time = 0;
+    public static float time_counter = 0;
 
+    public bool isCalledUndo = false;
+
+    public bool isUndoClickedA = false;
+    public bool isUndoClickedB = false;
+    public Text undoTextA, undoTextB;
 
     public int scoreValA = 0, scoreValB = 0, acHand = 0;
+    public int preScoreValA = 0, preScoreValB = 0;
 
     private Tile[] tileArray = new Tile[gridSize];
     private Tile[] previousTileArray = new Tile[gridSize];
+
+
+
     private bool reverse;
 
     public int turn = 0;
@@ -44,6 +55,7 @@ public class gridMain : MonoBehaviour
     private PowerUps listPowerUp2 = new PowerUps();
 
     private bool explodePowerUpInUse = false;
+
 
 
     // public Button pup1;
@@ -60,6 +72,9 @@ public class gridMain : MonoBehaviour
 
         nullTextA.gameObject.SetActive(false);
         nullTextB.gameObject.SetActive(false);
+
+        undoTextA.gameObject.SetActive(false);
+        undoTextB.gameObject.SetActive(false);
 
         initializeGrid();
         turnDisable();
@@ -151,9 +166,8 @@ public class gridMain : MonoBehaviour
     {
         for (int i = 0; i < gridSize; i++)
         {
-            // gridArray[i] = initialNumOfBeads;
-            // btnList[i].GetComponentInChildren<Text>().text = initialNumOfBeads.ToString();
             tileArray[i] = new Tile(initialNumOfBeads, i, btnList[i]);
+            previousTileArray[i] = new Tile(initialNumOfBeads, i, btnList[i]);
         }
     }
 
@@ -180,12 +194,17 @@ public class gridMain : MonoBehaviour
 
     public void ClikedNullify()
     {
-        isNullifyButtonClicked = true;
+        if (isPowerUpButtonClicked)
+        {
+            isNullifyButtonClicked = true;
+        }
     }
 
     public void ExplodedPowerUpInitiated()
     {
-        
+        isPowerUpButtonClicked = true;
+
+
         if (count_null == 0)
         {
             if ((turn * -1 == 1 && apList[5].interactable == true) || (turn * -1 == -1 && bpList[5].interactable == true))
@@ -229,13 +248,7 @@ public class gridMain : MonoBehaviour
                 List<PowerUpBase> playerPowerUps_2;
 
                 playerPowerUps_1 = listPowerUp1.GetActivePowerUps();
-
                 playerPowerUps_2 = listPowerUp2.GetActivePowerUps();
-
-
-                //var nullifyPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("nullify"));
-                //var explodePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("explode"));
-
 
                 if (turn == 1)
                 {
@@ -243,9 +256,6 @@ public class gridMain : MonoBehaviour
                     var explodePowerUp = playerPowerUps_1.FirstOrDefault(x => x.GetType().Equals("explode"));
                     listPowerUp1.DisablePowerUp(explodePowerUp);
                     listPowerUp2.DisablePowerUp(nullifyPowerUp);
-                    //apList[2].interactable = false;
-                    //bpList[5].interactable = false;
-
                 }
                 else
                 {
@@ -253,8 +263,6 @@ public class gridMain : MonoBehaviour
                     var explodePowerUp = playerPowerUps_2.FirstOrDefault(x => x.GetType().Equals("explode"));
                     listPowerUp2.DisablePowerUp(explodePowerUp);
                     listPowerUp1.DisablePowerUp(nullifyPowerUp);
-                    //apList[5].interactable = false;
-                    //bpList[2].interactable = false;
                 }
                 initializePowerUp();
                 return;
@@ -269,6 +277,8 @@ public class gridMain : MonoBehaviour
                 turnDisable();
             }
         }
+
+        isPowerUpButtonClicked = false;
     }
 
     public void UseExplodePowerUp(int indexToBeExploded)
@@ -286,7 +296,7 @@ public class gridMain : MonoBehaviour
         }
 
         var explodePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("explode"));
-        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(-1, indexToBeExploded);
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(-1, indexToBeExploded,ScoreA: scoreValA,ScoreB : scoreValB, PreviousScoreA:preScoreValA,PreviousScoreB:preScoreValB);
         powerUpTilesDto = explodePowerUp.Use(powerUpTilesDto);
         powerUpTilesDto.TileArray.CopyTo(tileArray, 0);
         
@@ -320,7 +330,7 @@ public class gridMain : MonoBehaviour
         }
 
         var reversePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("reverse"));        
-        PowerUpTilesDto powerUpTilesDto = getPowerUpDto();
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(ScoreA: scoreValA, ScoreB: scoreValB,PreviousScoreA:preScoreValA,PreviousScoreB:preScoreValB);
         powerUpTilesDto = reversePowerUp.Use(powerUpTilesDto);
         reverse = powerUpTilesDto.Reverse;
         if (turn == 1)
@@ -348,7 +358,7 @@ public class gridMain : MonoBehaviour
         }
 
         var swapPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("swap"));
-        PowerUpTilesDto powerUpTilesDto = getPowerUpDto();
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(ScoreA: scoreValA, ScoreB: scoreValB,PreviousScoreA:preScoreValA,PreviousScoreB:preScoreValB);
         powerUpTilesDto = swapPowerUp.Use(powerUpTilesDto);
         // reverse = powerUpTilesDto.Reverse;
         if (turn == 1)
@@ -362,7 +372,7 @@ public class gridMain : MonoBehaviour
         initializePowerUp(); //to disable used powerup
     }
 
-    private PowerUpTilesDto getPowerUpDto(int tileIdToBeBlocked = -1, int tileIdToBeExploded = -1)
+    private PowerUpTilesDto getPowerUpDto(int tileIdToBeBlocked = -1, int tileIdToBeExploded = -1, int ScoreA=0, int ScoreB=0, int PreviousScoreA=0, int PreviousScoreB=0)
     {
         PowerUpTilesDto powerUpTilesDto = new PowerUpTilesDto();
         powerUpTilesDto.TileArray = new Tile[tileArray.Length];
@@ -371,12 +381,17 @@ public class gridMain : MonoBehaviour
         tileArray.CopyTo(powerUpTilesDto.PreviousTileArray, 0);
         powerUpTilesDto.TileIdToBeBlocked = tileIdToBeBlocked;
         powerUpTilesDto.TileIdToBeExploded = tileIdToBeExploded;
+        powerUpTilesDto.ScoreA = ScoreA;
+        powerUpTilesDto.ScoreB = ScoreB;
+        powerUpTilesDto.PreviousScoreA = PreviousScoreA;
+        powerUpTilesDto.PreviousScoreB = PreviousScoreB;
         powerUpTilesDto.Reverse = reverse;
         return powerUpTilesDto;
     }
 
     public void updateScore(int ind)
     {
+       
         if(explodePowerUpInUse)
         {
             UseExplodePowerUp(ind);
@@ -390,10 +405,12 @@ public class gridMain : MonoBehaviour
             acHand = tileArray[i].getVal();
             if (acHand == 0)
             {
-                turn *= -1;
+                // change user turn
+                changeUserTurn();
+                //turn *= -1;
                 inHand.color = Color.white;
-                turnDisable();
-                checkWinCon();
+                //turnDisable();
+                //checkWinCon();
                 return;
             }
             inHand.GetComponentInChildren<Text>().text = "InHand: " + acHand;
@@ -438,9 +455,11 @@ public class gridMain : MonoBehaviour
                 }
                 totalCoins -= tileArray[(i - 2) % gridSize].getVal();
                 tileArray[(i - 2) % gridSize].setVal(0);
-                turn *= -1;
-                turnDisable();
-                checkWinCon();
+                // change user turn
+                changeUserTurn();
+                //turn *= -1;
+                //turnDisable();
+                //checkWinCon();
             }
         }
         else if (tileArray[(i + 1) % gridSize].getVal() == 0 && acHand == 0)
@@ -461,9 +480,11 @@ public class gridMain : MonoBehaviour
             totalCoins -= tileArray[(i + 2) % gridSize].getVal();
             // gridArray[(i + 2) % gridSize] = 0;
             tileArray[(i + 2) % gridSize].setVal(0);
-            turn *= -1;
-            turnDisable();
-            checkWinCon();
+            // change user turn
+            changeUserTurn();
+            //turn *= -1;
+            //turnDisable();
+            //checkWinCon();
         }
     }
 
@@ -621,24 +642,106 @@ public class gridMain : MonoBehaviour
         }
     }
 
+    public void undoClickedA()
+    {
+        isUndoClickedA = true;
+        time_counter = 5.0f;
+
+    }
+
+    public void undoClickedB()
+    {
+        isUndoClickedB = true;
+        time_counter = 5.0f;
+
+    }
+
+    public void changeUserTurn()
+    {
+
+        if ((turn == 1 && apList[0].interactable == true) || (turn == -1 && bpList[0].interactable == true))
+        {
+            if (turn * -1 == 1)
+            {
+                undoTextB.gameObject.SetActive(true);
+            }
+            else
+            {
+                undoTextA.gameObject.SetActive(true);
+            }
+
+            time_counter = 0;
+            isCalledUndo = true;
+
+        }      
+
+    }
+
+    public void initializeUndoPowerUp()
+    {
+        Debug.Log("undo Initialized");
+
+        isUndoClickedB = false;
+        isUndoClickedA = false;
+
+        List<PowerUpBase> playerPowerUps;
+        if (turn == 1)
+        {
+            playerPowerUps = listPowerUp1.GetActivePowerUps();
+        }
+        else 
+        {
+            playerPowerUps = listPowerUp2.GetActivePowerUps();
+        }
+
+        var undoPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("undo"));
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(ScoreA: scoreValA, ScoreB: scoreValB,PreviousScoreA:preScoreValA,PreviousScoreB:preScoreValB);
+        powerUpTilesDto.PreviousTileArray = previousTileArray;
+        powerUpTilesDto.TileArray = tileArray;
+        powerUpTilesDto = undoPowerUp.Use(powerUpTilesDto);
+      
+        if (turn == 1)
+        {
+            listPowerUp1.DisablePowerUp(undoPowerUp);
+        }
+        else
+        {
+            listPowerUp2.DisablePowerUp(undoPowerUp);
+        }
+
+        initializePowerUp(); //to disable used powerup
+
+        scoreA.GetComponentInChildren<Text>().text = "ScoreA: " + powerUpTilesDto.ScoreA;
+        scoreB.GetComponentInChildren<Text>().text = "ScoreB: " + powerUpTilesDto.ScoreB;
+        scoreValA = powerUpTilesDto.ScoreA;
+        scoreValB = powerUpTilesDto.ScoreB;
+
+        changeTurn();
+
+    }
+
+    void changeTurn()
+    {
+
+        turn *= -1;
+        turnDisable();
+        checkWinCon();
+    }
     // Update is called once per frame
     void Update()
     {
 
         if (isCalledNullify)
         {
-            
-            Debug.Log("count_null "+ count_null);
-            Debug.Log("isCalledNullify " + isCalledNullify);
-
-            nullify_time += Time.deltaTime;
+          
+            time_counter += Time.deltaTime;
 
 
-            if (nullify_time >= 5.0f)
+            if (time_counter >= 5.0f)
             {
-                Debug.Log(nullify_time);
+                Debug.Log(time_counter);
                 isCalledNullify = false;
-                nullify_time = 0;
+                time_counter = 0;
                 nullTextA.gameObject.SetActive(false);
                 nullTextB.gameObject.SetActive(false);
                 Debug.Log("isNullifyButtonClicked: " + isNullifyButtonClicked);
@@ -653,10 +756,36 @@ public class gridMain : MonoBehaviour
 
         }
 
+        if (isCalledUndo)
+        {
 
+            time_counter += Time.deltaTime;
+            if (time_counter >= 5.0f)
+            {
+                isCalledUndo = false;
+                undoTextA.gameObject.SetActive(false);
+                undoTextB.gameObject.SetActive(false);
 
+                if ((isUndoClickedB && turn == -1) || (isUndoClickedA && turn == 1))
+                {
+                    initializeUndoPowerUp();
+                }
+                else
+                {
+                    preScoreValA = scoreValA;
+                    preScoreValB = scoreValB;
+                    for (int i = 0; i < tileArray.Length; i++)
+                    {
+                        int currentVal = tileArray[i].getVal();
+                        previousTileArray[i].setVal(currentVal);
+                    
+                    }
+                    changeTurn();
+                }
+            }
 
-
+        }
+        
         updateBoard();
         // Checks if the game has a winner
         if (!win)

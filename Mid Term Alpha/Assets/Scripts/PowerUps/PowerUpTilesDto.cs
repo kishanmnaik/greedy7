@@ -12,5 +12,13 @@ public class PowerUpTilesDto
 
     public int TileIdToBeExploded { get; set; }
 
+    public int ScoreA { get; set; }
+
+    public int ScoreB { get; set; }
+
+    public int PreviousScoreA { get; set; }
+
+    public int PreviousScoreB { get; set; }
+
     public bool Reverse { get; set; }
 }
