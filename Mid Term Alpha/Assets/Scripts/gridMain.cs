@@ -19,7 +19,7 @@ public class gridMain : MonoBehaviour
     public Button[] apList, bpList;
 
     int[] gridArray = new int[gridSize];
-    public Text winText, inHand, explodeSelect;
+    public Text winText, inHand, explodeSelect, blockSelect;
     public Text scoreA, scoreB;
 
     public Text nullTextA, nullTextB;
@@ -31,6 +31,13 @@ public class gridMain : MonoBehaviour
     public int count_null = 0;
     public string nullify_powerup = "";
     public static float time_counter = 0;
+    public bool isCalledBlock = false;
+    public bool isBlockButtonClicked = false;
+    public int blockFlag = 0;
+    public static float Block_time = 0;
+    public int playerWhoBlocked = 0;
+    public int blockedIndex = -1;
+    public float time = 3f;
 
     public bool isCalledUndo = false;
 
@@ -70,6 +77,9 @@ public class gridMain : MonoBehaviour
         winText.gameObject.SetActive(false);
         explodeSelect = GameObject.Find("explodeSelect").GetComponent<Text>();
         explodeSelect.gameObject.SetActive(false);
+
+        blockSelect = GameObject.Find("blockSelect").GetComponent<Text>();
+        blockSelect.gameObject.SetActive(false);
 
         nullTextA.gameObject.SetActive(false);
         nullTextB.gameObject.SetActive(false);
@@ -205,6 +215,16 @@ public class gridMain : MonoBehaviour
         //ut.someFunction2("something non static");
         //EventSystem.current.SetSelectedGameObject(null);
         //util.someFunction("some thing in static");
+    }
+
+    public void ClickedBlock()
+    {
+        Debug.Log("************Entered ClickedBlock***********");
+        isBlockButtonClicked = true;
+        time_counter = 5.0f;
+        blockSelect.gameObject.SetActive(true);
+        blockSelect.text = "Select the tile to Block!";
+        turnDisable();
     }
 
 
@@ -414,60 +434,106 @@ public class gridMain : MonoBehaviour
 
     public void UseReversePowerUp()
     {
-        Debug.Log("reverse called :" + reverse);
-        List<PowerUpBase> playerPowerUps;
-        if (turn == 1)
-        {
-            playerPowerUps = listPowerUp1.GetActivePowerUps();
-        }
-        else
-        {
-            playerPowerUps = listPowerUp2.GetActivePowerUps();
-        }
 
-        var reversePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("reverse"));
-        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(ScoreA: scoreValA, ScoreB: scoreValB, PreviousScoreA: preScoreValA, PreviousScoreB: preScoreValB);
-        powerUpTilesDto = reversePowerUp.Use(powerUpTilesDto);
-        reverse = powerUpTilesDto.Reverse;
-        if (turn == 1)
+        isPowerUpButtonClicked = true;
+        nullify_powerup = "reverse";
+
+
+        if ((turn * -1 == 1 && apList[5].interactable == true) || (turn * -1 == -1 && bpList[5].interactable == true))
         {
-            listPowerUp1.DisablePowerUp(reversePowerUp);
+            if (turn * -1 == 1)
+            {
+                nullTextA.gameObject.SetActive(true);
+            }
+            else
+            {
+                nullTextB.gameObject.SetActive(true);
+            }
+
+            time_counter = 0;
+            isCalledNullify = true;
+
         }
         else
         {
-            listPowerUp2.DisablePowerUp(reversePowerUp);
+
+            Debug.Log("reverse called :" + reverse);
+            List<PowerUpBase> playerPowerUps;
+            if (turn == 1)
+            {
+                playerPowerUps = listPowerUp1.GetActivePowerUps();
+            }
+            else
+            {
+                playerPowerUps = listPowerUp2.GetActivePowerUps();
+            }
+
+            var reversePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("reverse"));
+            PowerUpTilesDto powerUpTilesDto = getPowerUpDto(ScoreA: scoreValA, ScoreB: scoreValB, PreviousScoreA: preScoreValA, PreviousScoreB: preScoreValB);
+            powerUpTilesDto = reversePowerUp.Use(powerUpTilesDto);
+            reverse = powerUpTilesDto.Reverse;
+            if (turn == 1)
+            {
+                listPowerUp1.DisablePowerUp(reversePowerUp);
+            }
+            else
+            {
+                listPowerUp2.DisablePowerUp(reversePowerUp);
+            }
+            initializePowerUp(); //to disable used powerup
         }
-        initializePowerUp(); //to disable used powerup
     }
 
     public void UseSwapPowerUp()
     {
-        // Debug.Log("swap called :" + reverse);
-        List<PowerUpBase> playerPowerUps;
-        if (turn == 1)
+        isPowerUpButtonClicked = true;
+        nullify_powerup = "swap";
+
+
+        if ((turn * -1 == 1 && apList[5].interactable == true) || (turn * -1 == -1 && bpList[5].interactable == true))
         {
-            playerPowerUps = listPowerUp1.GetActivePowerUps();
+            if (turn * -1 == 1)
+            {
+                nullTextA.gameObject.SetActive(true);
+            }
+            else
+            {
+                nullTextB.gameObject.SetActive(true);
+            }
+
+            time_counter = 0;
+            isCalledNullify = true;
+
         }
         else
         {
-            playerPowerUps = listPowerUp2.GetActivePowerUps();
-        }
+            // Debug.Log("swap called :" + reverse);
+            List<PowerUpBase> playerPowerUps;
+            if (turn == 1)
+            {
+                playerPowerUps = listPowerUp1.GetActivePowerUps();
+            }
+            else
+            {
+                playerPowerUps = listPowerUp2.GetActivePowerUps();
+            }
 
-        var swapPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("swap"));
-        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(ScoreA: scoreValA, ScoreB: scoreValB, PreviousScoreA: preScoreValA, PreviousScoreB: preScoreValB);
-        powerUpTilesDto = swapPowerUp.Use(powerUpTilesDto);
-        // reverse = powerUpTilesDto.Reverse;
-        if (turn == 1)
-        {
-            listPowerUp1.DisablePowerUp(swapPowerUp);
-        }
-        else
-        {
-            listPowerUp2.DisablePowerUp(swapPowerUp);
-        }
+            var swapPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("swap"));
+            PowerUpTilesDto powerUpTilesDto = getPowerUpDto(ScoreA: scoreValA, ScoreB: scoreValB, PreviousScoreA: preScoreValA, PreviousScoreB: preScoreValB);
+            powerUpTilesDto = swapPowerUp.Use(powerUpTilesDto);
+            // reverse = powerUpTilesDto.Reverse;
+            if (turn == 1)
+            {
+                listPowerUp1.DisablePowerUp(swapPowerUp);
+            }
+            else
+            {
+                listPowerUp2.DisablePowerUp(swapPowerUp);
+            }
 
-        takeSnapshot(powerUpTilesDto);
-        initializePowerUp(); //to disable used powerup
+            takeSnapshot(powerUpTilesDto);
+            initializePowerUp(); //to disable used powerup
+        }
     }
 
     public void takeSnapshot(PowerUpTilesDto powerUpTilesDto)
@@ -498,6 +564,114 @@ public class gridMain : MonoBehaviour
         return powerUpTilesDto;
     }
 
+    public void initiateBlockPowerUp()
+    {
+        /* Debug.Log("count_null " + count_null);
+        Debug.Log("isCalledBlock " + isCalledBlock);
+ 
+        Block_time += Time.deltaTime;
+ 
+        if (Block_time <= 5.0f)
+        {
+            Debug.Log(Block_time);
+            isCalledBlock = true;
+            Block_time = 0;
+ 
+            Debug.Log("isBlockButtonClicked: " + isBlockButtonClicked);
+ 
+            if (isBlockButtonClicked)
+            {
+                blockFlag = 1;
+                if (turn == 1)
+                {
+                    playerWhoBlocked = 1;
+ 
+                }
+                else
+                {
+                    playerWhoBlocked = -1;
+ 
+                }
+ 
+            }
+            Debug.Log("entered initiateBlockPowerUp");
+        } */
+        blockFlag = 1;
+        if (turn == 1)
+        {
+            playerWhoBlocked = 1;
+
+        }
+        else
+        {
+            playerWhoBlocked = -1;
+
+        }
+
+
+    }
+
+    /*public void isCheckBlockPowerUpAvailable()
+    {
+        List<PowerUpBase> playerPowerUps;
+        if (turn == 1)
+        {
+            playerPowerUps = listPowerUp1.GetActivePowerUps();
+        }
+        else
+        {
+            playerPowerUps = listPowerUp2.GetActivePowerUps();
+        }
+        Debug.Log("Inside isCheckBlock" + playerPowerUps.FirstOrDefault(x => x.GetType().Equals("shield")));
+        var checkBlockPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("shield"));
+ 
+ 
+        if (checkBlockPowerUp != null)
+        {
+            initiateBlockPowerUp();
+        }
+ 
+    }*/
+
+    public void blockTheCell(int indexToBeBlocked)
+    {
+        List<PowerUpBase> playerPowerUps;
+        if (turn == 1)
+        {
+            playerPowerUps = listPowerUp1.GetActivePowerUps();
+        }
+        else
+        {
+            playerPowerUps = listPowerUp2.GetActivePowerUps();
+        }
+
+        var blockPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("shield"));
+        Debug.Log(blockPowerUp);
+        Debug.Log("Inside blockTheCell" + indexToBeBlocked);
+        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(indexToBeBlocked, -1, ScoreA: scoreValA, ScoreB: scoreValB, PreviousScoreA: preScoreValA, PreviousScoreB: preScoreValB);
+        powerUpTilesDto = blockPowerUp.Use(powerUpTilesDto);
+        powerUpTilesDto.TileArray.CopyTo(tileArray, 0);
+
+        Debug.Log("entered blockTheCell");
+
+        if (turn == 1)
+        {
+            listPowerUp1.DisablePowerUp(blockPowerUp);
+        }
+        else
+        {
+            listPowerUp2.DisablePowerUp(blockPowerUp);
+        }
+
+        isBlockButtonClicked = false;
+        initializePowerUp(); //to disable used powerup
+        enableTiles();
+        turn *= -1;
+        turnDisable();
+        Debug.Log("Done with block cell.");
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+
     public void updateScore(int ind)
     {
 
@@ -506,12 +680,42 @@ public class gridMain : MonoBehaviour
             UseExplodePowerUp(ind);
             return;
         }
+        if (isBlockButtonClicked)
+        {
+
+            blockTheCell(ind);
+            blockSelect.gameObject.SetActive(false);
+            return;
+        }
+
+        Debug.Log("Val: In Update Score");
         int i = ind;
+        blockedIndex = i;
+
+        var checkBlockTile1 = tileArray[blockedIndex].getIsBlocked();
+        if (checkBlockTile1)
+        {
+            Debug.Log("Val: In CHECK BLOCK IN CHANGE TURN");
+            if (playerWhoBlocked == turn)
+            {
+                Debug.Log("Val: In Unblock");
+                tileArray[blockedIndex].setUnblock();
+                Debug.Log("index is free else" + blockedIndex);
+            }
+
+        }
+
         if (!inTurn)
         {
             inHand.color = new Color32(255, 241, 118, 255);
             // acHand = gridArray[i];
-            acHand = tileArray[i].getVal();
+            var checkBlockTile = tileArray[i % gridSize].getIsBlocked();
+            if (checkBlockTile)
+            {
+                changeUserTurn();
+                return;
+            }
+            acHand = tileArray[i % gridSize].getVal();
             if (acHand == 0)
             {
                 // change user turn
@@ -529,9 +733,16 @@ public class gridMain : MonoBehaviour
         }
         else
         {
-            inHand.GetComponentInChildren<Text>().text = "InHand: " + (--acHand);
+
             // gridArray[i]++;
-            tileArray[i].setVal(tileArray[i].getVal() + 1);
+            var checkBlockTile = tileArray[i % gridSize].getIsBlocked();
+            if (!checkBlockTile)
+            {
+                tileArray[i].setVal(tileArray[i % gridSize].getVal() + 1);
+                inHand.GetComponentInChildren<Text>().text = "InHand: " + (--acHand);
+            }
+
+
             if (acHand == 0)
             {
                 inHand.color = Color.white;
@@ -554,20 +765,28 @@ public class gridMain : MonoBehaviour
                 {
                     i = gridSize + 1;
                 }
-                if (turn == 1)
+                var checkBlockTile = tileArray[(i - 2) % gridSize].getIsBlocked();
+                if (!checkBlockTile)
                 {
-                    scoreValA += tileArray[(i - 2) % gridSize].getVal();
-                    scoreA.GetComponentInChildren<Text>().text = "ScoreA: " + scoreValA;
+                    if (turn == 1)
+                    {
+                        scoreValA += tileArray[(i - 2) % gridSize].getVal();
+                        scoreA.GetComponentInChildren<Text>().text = "ScoreA: " + scoreValA;
+                    }
+                    else
+                    {
+                        scoreValB += tileArray[(i - 2) % gridSize].getVal();
+                        scoreB.GetComponentInChildren<Text>().text = "ScoreB: " + scoreValB;
+                    }
+                    totalCoins -= tileArray[(i - 2) % gridSize].getVal();
+                    tileArray[(i - 2) % gridSize].setVal(0);
                 }
-                else
-                {
-                    scoreValB += tileArray[(i - 2) % gridSize].getVal();
-                    scoreB.GetComponentInChildren<Text>().text = "ScoreB: " + scoreValB;
-                }
-                totalCoins -= tileArray[(i - 2) % gridSize].getVal();
-                tileArray[(i - 2) % gridSize].setVal(0);
+
                 // change user turn
+
+                // checkBlock();
                 changeUserTurn();
+
                 //turn *= -1;
                 //turnDisable();
                 //checkWinCon();
@@ -575,23 +794,30 @@ public class gridMain : MonoBehaviour
         }
         else if (tileArray[(i + 1) % gridSize].getVal() == 0 && acHand == 0)
         {
-            if (turn == 1)
+            var checkBlockTile = tileArray[(i + 2) % gridSize].getIsBlocked();
+            if (!checkBlockTile)
             {
-                // scoreValA += gridArray[(i + 2) % gridSize];
-                scoreValA += tileArray[(i + 2) % gridSize].getVal();
-                scoreA.GetComponentInChildren<Text>().text = "ScoreA: " + scoreValA;
+                if (turn == 1)
+                {
+                    // scoreValA += gridArray[(i + 2) % gridSize];
+                    scoreValA += tileArray[(i + 2) % gridSize].getVal();
+                    scoreA.GetComponentInChildren<Text>().text = "ScoreA: " + scoreValA;
+                }
+                else
+                {
+                    // scoreValB += gridArray[(i + 2) % gridSize];
+                    scoreValB += tileArray[(i + 2) % gridSize].getVal();
+                    scoreB.GetComponentInChildren<Text>().text = "ScoreB: " + scoreValB;
+                }
+                // totalCoins -= gridArray[(i + 2) % gridSize];
+                totalCoins -= tileArray[(i + 2) % gridSize].getVal();
+                // gridArray[(i + 2) % gridSize] = 0;
+                tileArray[(i + 2) % gridSize].setVal(0);
             }
-            else
-            {
-                // scoreValB += gridArray[(i + 2) % gridSize];
-                scoreValB += tileArray[(i + 2) % gridSize].getVal();
-                scoreB.GetComponentInChildren<Text>().text = "ScoreB: " + scoreValB;
-            }
-            // totalCoins -= gridArray[(i + 2) % gridSize];
-            totalCoins -= tileArray[(i + 2) % gridSize].getVal();
-            // gridArray[(i + 2) % gridSize] = 0;
-            tileArray[(i + 2) % gridSize].setVal(0);
+
             // change user turn
+
+            // checkBlock();
             changeUserTurn();
             //turn *= -1;
             //turnDisable();
@@ -698,7 +924,6 @@ public class gridMain : MonoBehaviour
                 scoreValB += gridArray[(i + 1) % gridSize];
                 scoreB.GetComponentInChildren<Text>().text = "ScoreB: " + scoreValB;
             }
-
             Debug.Log("Coins this turn: " + gridArray[(i + 1) % gridSize]); // Coins earned this turn
             totalCoins -= gridArray[(i + 1) % gridSize]; // Deducts coins earned from Total coins
             // Resets the value of gridArray[i -> next] to 0
@@ -785,6 +1010,12 @@ public class gridMain : MonoBehaviour
             time_counter = 0;
             isCalledUndo = true;
 
+        }
+        else if ((turn == 1 && apList[4].interactable == true) || (turn == -1 && bpList[4].interactable == true))
+        {
+            // isCheckBlockPowerUpAvailable();
+            time_counter = 0;
+            isCalledBlock = true;
         }
         else
         {
@@ -891,11 +1122,112 @@ public class gridMain : MonoBehaviour
                         turnDisable();
                         isPowerUpButtonClicked = false;
                     }
-                }
+                } else if (nullify_powerup == "swap")
+                {
+                    if ((turn == 1 && isNullifyButtonClickedB) || (turn == -1 && isNullifyButtonClickedA))
+                    {
+                        initializeNullifyPowerUp(nullify_powerup);
+                        nullify_powerup = "";
+                        isPowerUpButtonClicked = false;
+                    }
+                    else
+                    {
+                        nullify_powerup = "";
 
+                        // Debug.Log("swap called :" + reverse);
+                        List<PowerUpBase> playerPowerUps;
+                        if (turn == 1)
+                        {
+                            playerPowerUps = listPowerUp1.GetActivePowerUps();
+                        }
+                        else
+                        {
+                            playerPowerUps = listPowerUp2.GetActivePowerUps();
+                        }
+
+                        var swapPowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("swap"));
+                        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(ScoreA: scoreValA, ScoreB: scoreValB, PreviousScoreA: preScoreValA, PreviousScoreB: preScoreValB);
+                        powerUpTilesDto = swapPowerUp.Use(powerUpTilesDto);
+                        // reverse = powerUpTilesDto.Reverse;
+                        if (turn == 1)
+                        {
+                            listPowerUp1.DisablePowerUp(swapPowerUp);
+                        }
+                        else
+                        {
+                            listPowerUp2.DisablePowerUp(swapPowerUp);
+                        }
+
+                        takeSnapshot(powerUpTilesDto);
+                        initializePowerUp(); //to disable used powerup
+
+                    }
+                } else if (nullify_powerup == "reverse")
+                {
+                    if ((turn == 1 && isNullifyButtonClickedB) || (turn == -1 && isNullifyButtonClickedA))
+                    {
+                        initializeNullifyPowerUp(nullify_powerup);
+                        nullify_powerup = "";
+                        isPowerUpButtonClicked = false;
+                    }
+                    else
+                    {
+                        nullify_powerup = "";
+                        Debug.Log("reverse called :" + reverse);
+                        List<PowerUpBase> playerPowerUps;
+                        if (turn == 1)
+                        {
+                            playerPowerUps = listPowerUp1.GetActivePowerUps();
+                        }
+                        else
+                        {
+                            playerPowerUps = listPowerUp2.GetActivePowerUps();
+                        }
+
+                        var reversePowerUp = playerPowerUps.FirstOrDefault(x => x.GetType().Equals("reverse"));
+                        PowerUpTilesDto powerUpTilesDto = getPowerUpDto(ScoreA: scoreValA, ScoreB: scoreValB, PreviousScoreA: preScoreValA, PreviousScoreB: preScoreValB);
+                        powerUpTilesDto = reversePowerUp.Use(powerUpTilesDto);
+                        reverse = powerUpTilesDto.Reverse;
+                        if (turn == 1)
+                        {
+                            listPowerUp1.DisablePowerUp(reversePowerUp);
+                        }
+                        else
+                        {
+                            listPowerUp2.DisablePowerUp(reversePowerUp);
+                        }
+                        initializePowerUp(); //to disable used powerup
+                    }
+                }
             }
 
         }
+
+        if (isCalledBlock)
+        {
+            time_counter += Time.deltaTime;
+            if (time_counter >= 5.0f)
+            {
+                time_counter = 0;
+                isCalledBlock = false;
+                //undoTextA.gameObject.SetActive(false);
+                //undoTextB.gameObject.SetActive(false);
+
+                if (isBlockButtonClicked)
+                {
+                    initiateBlockPowerUp();
+
+                }
+                else
+                {
+                    changeTurn();
+                }
+            }
+            Debug.Log("Val: Logging inside Timer");
+
+
+        }
+
 
         if (isCalledUndo)
         {
