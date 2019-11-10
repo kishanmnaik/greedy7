@@ -26,12 +26,15 @@ public class mainScene : MonoBehaviour
 
     public void quitGame()
     {
+    	// PC Version
         try
         {
-            UnityEditor.EditorApplication.isPlaying = false;
+           UnityEditor.EditorApplication.isPlaying = false;
         } catch (Exception e)
         {
-            Application.Quit();
+           Application.Quit();
         }
+        // Android Version
+        // Application.Quit();
     }
 }

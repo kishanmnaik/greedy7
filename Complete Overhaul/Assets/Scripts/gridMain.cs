@@ -88,6 +88,8 @@ public class gridMain : MonoBehaviour
 
         endScreen.gameObject.SetActive(false);
         allPopUps.gameObject.SetActive(false);
+
+        disableLayer.rectTransform.sizeDelta = new Vector2(Screen.width, Screen.height);
     }
 
     void handleReverseDirection()
@@ -390,7 +392,7 @@ public class gridMain : MonoBehaviour
         explodeSelect.gameObject.SetActive(true);
         explodeSelect.text = "Select the tile to shield!";
 
-        shieldPop.transform.localPosition = new Vector3(0, -380, 0);
+        shieldPop.transform.localPosition = new Vector3(0, Screen.height + 200, 0);
         allPopUps.gameObject.SetActive(false);
 
         turn *= -1;
@@ -553,7 +555,7 @@ public class gridMain : MonoBehaviour
         scoreValA = powerUpTilesDto.ScoreA;
         scoreValB = powerUpTilesDto.ScoreB;
 
-        undoPop.transform.localPosition = new Vector3(0, -380, 0);
+        // undoPop.transform.localPosition = new Vector3(0, -380, 0);
         allPopUps.gameObject.SetActive(false);
 
         undoSuccess = true;
