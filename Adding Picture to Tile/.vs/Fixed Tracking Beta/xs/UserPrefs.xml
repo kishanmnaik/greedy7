@@ -1,0 +1,23 @@
+﻿<Properties StartupConfiguration="{A6C824C2-BF62-AA76-F795-984C5D2B940D}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/gridMain.cs">
+    <Files>
+      <File FileName="Assets/Scripts/gridMain.cs" Line="908" Column="46" />
+      <File FileName="Assets/Scripts/Loading.cs" Line="18" Column="1" />
+      <File FileName="Assets/Scripts/Tile.cs" Line="26" Column="17" />
+    </Files>
+    <Pads>
+      <Pad Id="MonoDevelop.UnitTesting.TestPad">
+        <State name="__root__">
+          <Node name="Fixed Tracking Beta" expanded="True" selected="True" />
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="83a74a13-2236-4264-9b36-fbec13cc461e" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
