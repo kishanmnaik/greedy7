@@ -1,0 +1,15 @@
+GameNumber,TotalTurns,TotalTime,PowerUpList,UsedPowerUpList
+1,20,163,swap|shield|reverse|swap|shield|undo|,shield|shield|reverse|swap|undo|swap|
+2,31,242,explode|shield|undo|swap|shield|reverse|,shield|reverse|explode|undo|shield|swap|3,14,130,explode|swap|explode|swap|,swap|swap|explode|explode|
+4,34,184,swap|reverse|undo|shield|explode|reverse|,reverse|shield|undo|
+5,16,72,swap|reverse|explode|swap|reverse|explode|,reverse|
+6,24,99,reverse|swap|explode|reverse|swap|explode|,swap|reverse|explode|explode|
+7,15,113,swap|reverse|shield|swap|reverse|explode|,shield|reverse|swap|
+8,19,75,swap|reverse|shield|swap|reverse|explode|,reverse|shield|swap|explode|
+9,18,166,shield|explode|undo|shield|explode|undo|,undo|shield|explode|undo|shield|
+10,13,50,reverse|swap|explode|reverse|swap|explode|,reverse|
+11,10,90,,
+12,15,38,reverse|swap|reverse|swap|,reverse|
+13,18,97,,
+14,24,121,,
+15,19,28,,
