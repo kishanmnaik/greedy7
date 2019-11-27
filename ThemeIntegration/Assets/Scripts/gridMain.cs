@@ -160,6 +160,17 @@ public class gridMain : MonoBehaviour
         }
         catch (Exception e)
         {
+            string acPath = "nums/default";
+            // Debug.Log("PATH: " + line);
+
+            object[] tempSprites = Resources.LoadAll(acPath, typeof(Sprite));
+            picture_tile = new Sprite[tempSprites.Length];
+            Debug.Log("Sprites Length: " + tempSprites.Length);
+
+            for (var x = 0; x < tempSprites.Length; x++)
+            {
+                picture_tile[x] = (Sprite)tempSprites[x];
+            }
             Debug.Log("Lol doesn't exist buddy.");
         }
     }

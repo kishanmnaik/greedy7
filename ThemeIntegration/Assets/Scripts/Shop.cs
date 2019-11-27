@@ -34,6 +34,8 @@ public class Shop : MonoBehaviour
             // string acPath = "nums/" + line;
             // Debug.Log("PATH: " + acPath);
 
+         
+
             selectedText.GetComponentInChildren<Text>().text = "Selected: " + line;
 
             switch (line)

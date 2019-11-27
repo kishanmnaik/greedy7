@@ -21,3 +21,4 @@ GameNumber,TotalTurns,TotalTime,PowerUpList,UsedPowerUpList
 21,13,29,undo|swap|,undo|
 22,13,51,shield|swap|swap|swap|swap|reverse|,shield|swap|reverse|swap|swap|swap|
 23,14,28,explode|explode|explode|explode|explode|explode|,
+24,38,287,reverse|swap|shield|reverse|undo|explode|,reverse|shield|undo|swap|explode|reverse|
